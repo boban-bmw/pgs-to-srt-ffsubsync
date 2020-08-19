@@ -14,5 +14,8 @@
     "ffsubsync"
   ],
   "author": "Boban BMW",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
 }
