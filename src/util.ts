@@ -8,8 +8,27 @@ export const jump = {
   segmentSize: 2,
 };
 
-export const bufferToNumber = (buffer: Buffer): number =>
+export const bufferToNumber = (buffer: Buffer) =>
   parseInt(buffer.toString("hex"), 16);
 
-export const bufferToTimestamp = (buffer: Buffer): number =>
+export const bufferToTimestamp = (buffer: Buffer) =>
   bufferToNumber(buffer) / 90;
+
+const pad = (num: number) => {
+  return num < 10 ? `0${num}` : num.toString();
+};
+
+export const timestampToSrt = (timestamp: number) => {
+  const milliseconds = timestamp % 1000;
+
+  const timestampInSeconds = Math.floor(timestamp / 1000);
+  const seconds = pad(timestampInSeconds % 60);
+
+  const timestampInMinutes = Math.floor(timestampInSeconds / 60);
+  const minutes = pad(timestampInMinutes % 60);
+
+  const timestampInHours = Math.floor(timestampInMinutes / 60);
+  const hours = pad(timestampInHours % 60);
+
+  return `${hours}:${minutes}:${seconds},${milliseconds}`;
+};
