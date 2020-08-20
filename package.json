@@ -1,5 +1,5 @@
 {
-  "name": "pgs-to-srt-active",
+  "name": "pgs-to-srt-ffsubsync-reference",
   "version": "1.0.0",
   "description": "Generates .srt subtitles which are active at the same time as PGS to be used as reference for ffsubsync.",
   "main": "src/index.js",
