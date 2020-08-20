@@ -14,12 +14,12 @@ export const bufferToNumber = (buffer: Buffer) =>
 export const bufferToTimestamp = (buffer: Buffer) =>
   bufferToNumber(buffer) / 90;
 
-const pad = (num: number) => {
-  return num < 10 ? `0${num}` : num.toString();
-};
+const pad = (num: number) => num.toString().padStart(2, "0");
+
+const padMilliseconds = (num: number) => num.toString().padStart(3, "0");
 
 export const timestampToSrt = (timestamp: number) => {
-  const milliseconds = timestamp % 1000;
+  const milliseconds = padMilliseconds(timestamp % 1000);
 
   const timestampInSeconds = Math.floor(timestamp / 1000);
   const seconds = pad(timestampInSeconds % 60);

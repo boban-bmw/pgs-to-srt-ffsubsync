@@ -10,8 +10,7 @@ export const generateSrt = (timestamps: number[]) => {
   for (let i = 0; i < srtTimestamps.length; i += 2) {
     lines.push(`${counter.toString()}\n`);
     lines.push(`${srtTimestamps[i]} --> ${srtTimestamps[i + 1]}\n`);
-    lines.push("PGS\n");
-    lines.push("\n");
+    lines.push(`${counter}\n\n`);
 
     counter += 1;
   }
