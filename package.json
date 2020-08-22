@@ -1,7 +1,7 @@
 {
-  "name": "pgs-to-srt-ffsubsync-reference",
+  "name": "pgs-to-srt-ffsubsync",
   "version": "1.0.0",
-  "description": "Generates .srt subtitles which are active at the same time as PGS to be used as reference for ffsubsync.",
+  "description": "Uses PGS subtitles present in the file to sync .srt subtitles using ffsubsync.",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
