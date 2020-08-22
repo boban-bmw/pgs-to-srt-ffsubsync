@@ -12,6 +12,10 @@ export const generateSrt = (timestamps: number[], outputName: string) =>
 
     const srtTimestamps = timestamps.map(timestampToSrt);
 
+    if (timestamps.length % 2 !== 0) {
+      timestamps.pop();
+    }
+
     const lines = [];
 
     let counter = 1;
