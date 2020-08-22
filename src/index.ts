@@ -6,7 +6,7 @@ import ffmpeg from "fluent-ffmpeg";
 
 import { generateTimestamps } from "./generateTimestamps";
 import { generateSrt } from "./generateSrt";
-import { getPGSStreams, extractStream } from "./ffmpeg";
+import { getPGSStreams, extractSup } from "./ffmpeg";
 
 const { argv } = yargs.options({
   src: {
@@ -29,19 +29,19 @@ async function run() {
     if (relevantSrts.length !== 0) {
       const pgsStreams = await getPGSStreams(mkv);
 
-      const pgsFiles = await Promise.all(
-        pgsStreams.map(async (pgsStream) => await extractStream(mkv, pgsStream))
+      const supFiles = await Promise.all(
+        pgsStreams.map((pgsStream) => extractSup(mkv, pgsStream))
       );
 
-      console.log(pgsFiles);
+      const generatedSrts = await Promise.all(
+        supFiles.map((sup) => {
+          const timestamps = generateTimestamps(fs.readFileSync(sup));
+
+          return generateSrt(timestamps, `${sup}.srt`);
+        })
+      );
     }
   }
 }
-
-// const pgs = fs.readFileSync("./test.sup");
-
-// const timestamps = generateTimestamps(pgs);
-
-// generateSrt(timestamps);
 
 run();

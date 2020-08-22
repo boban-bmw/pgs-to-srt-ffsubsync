@@ -26,14 +26,21 @@ export const getPGSStreams = (mkv: string) =>
     });
   });
 
-export const extractStream = (mkv: string, pgsStream: PGSStream) =>
-  new Promise((resolve, reject) => {
+export const extractSup = (mkv: string, pgsStream: PGSStream) =>
+  new Promise<string>((resolve, reject) => {
     const outputName = path.join(
       __dirname,
       "..",
       "tmp",
       `${path.basename(mkv)}-${pgsStream.index}.sup`
     );
+
+    if (fs.existsSync(outputName)) {
+      console.log(`${outputName} already exists, skipping...`);
+
+      resolve(outputName);
+      return;
+    }
 
     const command = ffmpeg()
       .input(fs.createReadStream(mkv))

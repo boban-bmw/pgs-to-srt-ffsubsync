@@ -1,23 +1,40 @@
 import fs from "fs";
 import { timestampToSrt } from "./util";
 
-export const generateSrt = (timestamps: number[]) => {
-  const srtTimestamps = timestamps.map(timestampToSrt);
+export const generateSrt = (timestamps: number[], outputName: string) =>
+  new Promise<string>((resolve, reject) => {
+    if (fs.existsSync(outputName)) {
+      console.log(`${outputName} already exists, skipping...`);
 
-  const lines = [];
+      resolve(outputName);
+      return;
+    }
 
-  let counter = 1;
-  for (let i = 0; i < srtTimestamps.length; i += 2) {
-    lines.push(`${counter.toString()}\n`);
-    lines.push(`${srtTimestamps[i]} --> ${srtTimestamps[i + 1]}\n`);
-    lines.push(`${counter}\n\n`);
+    const srtTimestamps = timestamps.map(timestampToSrt);
 
-    counter += 1;
-  }
+    const lines = [];
 
-  const outputStream = fs.createWriteStream("./output.srt");
+    let counter = 1;
+    for (let i = 0; i < srtTimestamps.length; i += 2) {
+      lines.push(`${counter.toString()}\n`);
+      lines.push(`${srtTimestamps[i]} --> ${srtTimestamps[i + 1]}\n`);
+      lines.push(`${counter}\n\n`);
 
-  lines.forEach((line) => {
-    outputStream.write(line);
+      counter += 1;
+    }
+
+    const outputStream = fs
+      .createWriteStream(outputName)
+      .on("finish", () => {
+        resolve(outputName);
+      })
+      .on("error", (e) => {
+        reject(e);
+      });
+
+    lines.forEach((line) => {
+      outputStream.write(line);
+    });
+
+    outputStream.end();
   });
-};
