@@ -19,7 +19,10 @@
   "author": "Boban BMW",
   "license": "MIT",
   "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.14",
     "@types/node": "^14.6.0",
+    "@types/recursive-readdir": "^2.2.0",
+    "@types/yargs": "^15.0.5",
     "husky": "^4.2.5",
     "prettier": "2.0.5",
     "pretty-quick": "^2.0.1",
@@ -29,5 +32,10 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
+    "recursive-readdir": "^2.2.2",
+    "yargs": "^15.4.1"
   }
 }
