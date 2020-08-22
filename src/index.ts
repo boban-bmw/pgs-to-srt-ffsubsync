@@ -2,11 +2,12 @@ import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 import readdir from "recursive-readdir";
-import ffmpeg from "fluent-ffmpeg";
+import minby from "lodash.minby";
 
 import { generateTimestamps } from "./generateTimestamps";
 import { generateSrt } from "./generateSrt";
 import { getPGSStreams, extractSup } from "./ffmpeg";
+import { makeSyncer, calcDiff } from "./ffs";
 
 const { argv } = yargs.options({
   src: {
@@ -40,6 +41,27 @@ async function run() {
           return generateSrt(timestamps, `${sup}.srt`);
         })
       );
+
+      for (const srt of relevantSrts) {
+        const syncWith = makeSyncer(srt);
+
+        const results = await Promise.all(generatedSrts.map(syncWith));
+
+        const bestMatch = minby(results, calcDiff);
+
+        console.log(
+          `Best match found with offset ${
+            bestMatch!.offset
+          } and framerate scale factor ${bestMatch!.framerateScaleFactor}`
+        );
+
+        fs.copyFileSync(
+          bestMatch!.filename,
+          path.join(directory, `${path.basename(srt)}-synced.srt`)
+        );
+      }
+    } else {
+      console.log(`No subtitles found for ${mkv}`);
     }
   }
 }

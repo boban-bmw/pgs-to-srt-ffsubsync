@@ -26,6 +26,7 @@ export const generateSrt = (timestamps: number[], outputName: string) =>
     const outputStream = fs
       .createWriteStream(outputName)
       .on("finish", () => {
+        console.log(`Generated ${outputName}`);
         resolve(outputName);
       })
       .on("error", (e) => {
