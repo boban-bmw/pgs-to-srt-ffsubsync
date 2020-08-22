@@ -25,12 +25,19 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
           return;
         }
 
-        const offset = parseFloat(
-          output.split("offset seconds: ")[1].slice(0, 5)
-        );
-        const framerateScaleFactor = parseFloat(
-          output.split("framerate scale factor: ")[1].slice(0, 5)
-        );
+        const offsetSlice = output.split("offset seconds: ")[1]?.slice(0, 5);
+        const framerateSlice = output
+          .split("framerate scale factor: ")[1]
+          ?.slice(0, 5);
+
+        if (!offsetSlice || !framerateSlice) {
+          resolve(null);
+
+          return;
+        }
+
+        const offset = parseFloat(offsetSlice);
+        const framerateScaleFactor = parseFloat(framerateSlice);
 
         resolve({
           offset,
