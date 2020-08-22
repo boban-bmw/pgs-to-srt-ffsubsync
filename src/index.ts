@@ -62,16 +62,13 @@ async function run() {
 
           const bestMatch = minby(results, calcDiff);
 
-          fs.copyFileSync(
-            bestMatch!.filename,
-            path.join(directory, `${path.basename(srt)}-synced.srt`)
-          );
+          if (bestMatch) {
+            fs.copyFileSync(bestMatch.filename, srt);
 
-          console.log(
-            `Best match - offset: ${
-              bestMatch!.offset
-            }, framerate scale factor: ${bestMatch!.framerateScaleFactor}`
-          );
+            console.log(
+              `Best match - offset: ${bestMatch.offset}, framerate scale factor: ${bestMatch.framerateScaleFactor}`
+            );
+          }
         }
       } catch (e) {
         console.error(e);
