@@ -22,6 +22,8 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
       })
       .on("close", (code) => {
         if (code !== 0) {
+          resolve(null);
+
           return;
         }
 
