@@ -7,7 +7,7 @@ import minby from "lodash.minby";
 import { generateTimestamps } from "./generateTimestamps";
 import { generateSrt } from "./generateSrt";
 import { getPGSStreams, extractSup } from "./ffmpeg";
-import { makeSyncer, calcDiff } from "./ffs";
+import { makeSyncer, calcDiff, SyncResult } from "./ffs";
 
 const { argv } = yargs.options({
   src: {
@@ -32,39 +32,49 @@ async function run() {
     const relevantSrts = srts.filter((srt) => path.dirname(srt) === directory);
 
     if (relevantSrts.length !== 0) {
-      console.log(`Found ${relevantSrts.length} relevant .srt file(s)`);
+      try {
+        console.log(`Found ${relevantSrts.length} relevant .srt file(s)`);
 
-      const pgsStreams = await getPGSStreams(mkv);
+        const pgsStreams = (await getPGSStreams(mkv)).filter(Boolean);
 
-      const supFiles = await Promise.all(
-        pgsStreams.map((pgsStream) => extractSup(mkv, pgsStream))
-      );
+        const supFiles = (
+          await Promise.all(
+            pgsStreams.map((pgsStream) => extractSup(mkv, pgsStream))
+          )
+        ).filter(Boolean);
 
-      const generatedSrts = await Promise.all(
-        supFiles.map((sup) => {
-          const timestamps = generateTimestamps(fs.readFileSync(sup));
+        const generatedSrts = (
+          await Promise.all(
+            supFiles.map((sup) => {
+              const timestamps = generateTimestamps(fs.readFileSync(sup));
 
-          return generateSrt(timestamps, `${sup}.srt`);
-        })
-      );
+              return generateSrt(timestamps, `${sup}.srt`);
+            })
+          )
+        ).filter(Boolean);
 
-      for (const srt of relevantSrts) {
-        const syncWith = makeSyncer(srt);
+        for (const srt of relevantSrts) {
+          const syncWith = makeSyncer(srt);
 
-        const results = await Promise.all(generatedSrts.map(syncWith));
+          const results = (
+            await Promise.all(generatedSrts.map(syncWith))
+          ).filter((item): item is SyncResult => !!item);
 
-        const bestMatch = minby(results, calcDiff);
+          const bestMatch = minby(results, calcDiff);
 
-        fs.copyFileSync(
-          bestMatch!.filename,
-          path.join(directory, `${path.basename(srt)}-synced.srt`)
-        );
+          fs.copyFileSync(
+            bestMatch!.filename,
+            path.join(directory, `${path.basename(srt)}-synced.srt`)
+          );
 
-        console.log(
-          `Best match - offset: ${bestMatch!.offset}, framerate scale factor: ${
-            bestMatch!.framerateScaleFactor
-          }`
-        );
+          console.log(
+            `Best match - offset: ${
+              bestMatch!.offset
+            }, framerate scale factor: ${bestMatch!.framerateScaleFactor}`
+          );
+        }
+      } catch (e) {
+        console.error(e);
       }
     } else {
       console.log(`No .srt files found for ${mkv}`);

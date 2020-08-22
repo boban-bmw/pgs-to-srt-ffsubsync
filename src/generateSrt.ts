@@ -2,7 +2,7 @@ import fs from "fs";
 import { timestampToSrt } from "./util";
 
 export const generateSrt = (timestamps: number[], outputName: string) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<string>((resolve) => {
     if (fs.existsSync(outputName)) {
       console.log(`${outputName} already exists, skipping...`);
 
@@ -30,7 +30,9 @@ export const generateSrt = (timestamps: number[], outputName: string) =>
         resolve(outputName);
       })
       .on("error", (e) => {
-        reject(e);
+        console.error(e);
+
+        resolve("");
       });
 
     lines.forEach((line) => {

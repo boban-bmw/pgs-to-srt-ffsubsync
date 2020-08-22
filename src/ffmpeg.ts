@@ -9,10 +9,13 @@ type PGSStream = ffmpeg.FfprobeStream & {
 };
 
 export const getPGSStreams = (mkv: string) =>
-  new Promise<PGSStream[]>((resolve, reject) => {
+  new Promise<PGSStream[]>((resolve) => {
     ffmpeg.ffprobe(mkv, (err, mkvData) => {
       if (err) {
-        reject(err);
+        console.error(err);
+
+        resolve([]);
+
         return;
       }
 
@@ -29,7 +32,7 @@ export const getPGSStreams = (mkv: string) =>
   });
 
 export const extractSup = (mkv: string, pgsStream: PGSStream) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<string>((resolve) => {
     const outputName = path.join(
       __dirname,
       "..",
@@ -54,7 +57,9 @@ export const extractSup = (mkv: string, pgsStream: PGSStream) =>
         console.log(`Processing stream ${pgsStream.index}...`);
       })
       .on("error", (e) => {
-        reject(e);
+        console.error(e);
+
+        resolve("");
       })
       .on("end", () => {
         console.log(`Extracted stream ${pgsStream.index}`);
