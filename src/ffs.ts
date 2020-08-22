@@ -33,6 +33,8 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
           ?.slice(0, 5);
 
         if (!offsetSlice || !framerateSlice) {
+          console.error(output);
+
           resolve(null);
 
           return;

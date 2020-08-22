@@ -25,7 +25,7 @@ async function run() {
   const srts = await readdir(argv.src, ["!*.srt"]);
 
   for (const mkv of mkvs) {
-    console.log(`Processing ${mkv}...`);
+    console.log(`Processing ${mkv} (${mkvs.indexOf(mkv)}/${mkvs.length})...`);
 
     const directory = path.dirname(mkv);
 
@@ -68,6 +68,8 @@ async function run() {
             console.log(
               `Best match - offset: ${bestMatch.offset}, framerate scale factor: ${bestMatch.framerateScaleFactor}`
             );
+          } else {
+            console.log(`Syncing failed for ${srt}`);
           }
         }
       } catch (e) {
