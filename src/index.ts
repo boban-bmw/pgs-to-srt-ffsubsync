@@ -19,15 +19,21 @@ const { argv } = yargs.options({
 });
 
 async function run() {
+  console.log(`Scanning ${argv.src}...`);
+
   const mkvs = await readdir(argv.src, ["!*.mkv"]);
   const srts = await readdir(argv.src, ["!*.srt"]);
 
   for (const mkv of mkvs) {
+    console.log(`Processing ${mkv}...`);
+
     const directory = path.dirname(mkv);
 
     const relevantSrts = srts.filter((srt) => path.dirname(srt) === directory);
 
     if (relevantSrts.length !== 0) {
+      console.log(`Found ${relevantSrts.length} relevant .srt file(s)`);
+
       const pgsStreams = await getPGSStreams(mkv);
 
       const supFiles = await Promise.all(
@@ -49,19 +55,19 @@ async function run() {
 
         const bestMatch = minby(results, calcDiff);
 
-        console.log(
-          `Best match found with offset ${
-            bestMatch!.offset
-          } and framerate scale factor ${bestMatch!.framerateScaleFactor}`
-        );
-
         fs.copyFileSync(
           bestMatch!.filename,
           path.join(directory, `${path.basename(srt)}-synced.srt`)
         );
+
+        console.log(
+          `Best match - offset: ${bestMatch!.offset}, framerate scale factor: ${
+            bestMatch!.framerateScaleFactor
+          }`
+        );
       }
     } else {
-      console.log(`No subtitles found for ${mkv}`);
+      console.log(`No .srt files found for ${mkv}`);
     }
   }
 }

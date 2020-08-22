@@ -7,31 +7,35 @@ type SyncResult = {
 
 export const makeSyncer = (srt: string) => (generatedSrt: string) =>
   new Promise<SyncResult>((resolve, reject) => {
-    console.log(`Syncing ${srt} with ${generatedSrt}`);
+    console.log(`Syncing ${srt} with ${generatedSrt}...`);
 
     const filename = `${generatedSrt}-synced.srt`;
 
-    const child = child_process.spawnSync(
-      "ffs",
-      [generatedSrt, "-i", srt, "-o", filename],
-      { encoding: "utf-8" }
-    );
+    let output = "";
 
-    if (child.status !== 0) {
-      reject();
-    }
+    const child = child_process
+      .spawn("ffs", [generatedSrt, "-i", srt, "-o", filename])
+      .on("close", (code) => {
+        if (code !== 0) {
+          reject();
+        } else {
+          const offset = parseFloat(
+            output.split("offset seconds: ")[1].slice(0, 5)
+          );
+          const framerateScaleFactor = parseFloat(
+            output.split("framerate scale factor: ")[1].slice(0, 5)
+          );
 
-    const offset = parseFloat(
-      child.stderr.split("offset seconds: ")[1].slice(0, 5)
-    );
-    const framerateScaleFactor = parseFloat(
-      child.stderr.split("framerate scale factor: ")[1].slice(0, 5)
-    );
+          resolve({
+            offset,
+            framerateScaleFactor,
+            filename,
+          });
+        }
+      });
 
-    resolve({
-      offset,
-      framerateScaleFactor,
-      filename,
+    child.stderr.on("data", (chunk: Buffer) => {
+      output += chunk.toString();
     });
   });
 

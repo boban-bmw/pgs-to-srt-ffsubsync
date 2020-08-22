@@ -16,13 +16,15 @@ export const getPGSStreams = (mkv: string) =>
         return;
       }
 
-      resolve(
-        (mkvData.streams.filter(
-          (stream) => stream.codec_name === "hdmv_pgs_subtitle"
-        ) as PGSStream[]).filter(
-          (stream: PGSStream) => stream.tags.language === "eng"
-        )
+      const pgsStreams = (mkvData.streams.filter(
+        (stream) => stream.codec_name === "hdmv_pgs_subtitle"
+      ) as PGSStream[]).filter(
+        (stream: PGSStream) => stream.tags.language === "eng"
       );
+
+      console.log(`Found ${pgsStreams.length} PGS stream(s)`);
+
+      resolve(pgsStreams);
     });
   });
 
@@ -36,7 +38,7 @@ export const extractSup = (mkv: string, pgsStream: PGSStream) =>
     );
 
     if (fs.existsSync(outputName)) {
-      console.log(`${outputName} already exists, skipping...`);
+      console.log(`Stream ${pgsStream.index} already extracted, skipping...`);
 
       resolve(outputName);
       return;
@@ -49,13 +51,13 @@ export const extractSup = (mkv: string, pgsStream: PGSStream) =>
       .noVideo()
       .outputOptions("-map", `0:${pgsStream.index}`, "-c:s", "copy")
       .on("start", () => {
-        console.log(`Processing ${mkv} stream ${pgsStream.index}...`);
+        console.log(`Processing stream ${pgsStream.index}...`);
       })
       .on("error", (e) => {
         reject(e);
       })
       .on("end", () => {
-        console.log(`Extracted ${outputName}`);
+        console.log(`Extracted stream ${pgsStream.index}`);
         resolve(outputName);
       });
 
