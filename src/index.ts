@@ -2,10 +2,11 @@ import fs from "fs";
 import path from "path";
 import yargs from "yargs";
 import readdir from "recursive-readdir";
+import ffmpeg from "fluent-ffmpeg";
 
 import { generateTimestamps } from "./generateTimestamps";
 import { generateSrt } from "./generateSrt";
-import { getPGSStreams } from "./ffmpeg";
+import { getPGSStreams, extractStream } from "./ffmpeg";
 
 const { argv } = yargs.options({
   src: {
@@ -23,12 +24,16 @@ async function run() {
   for (const mkv of mkvs) {
     const directory = path.dirname(mkv);
 
-    const relevantSrts = srts.filter((path) => path.startsWith(directory));
+    const relevantSrts = srts.filter((srt) => path.dirname(srt) === directory);
 
     if (relevantSrts.length !== 0) {
-      const PGSStreams = await getPGSStreams(mkv);
+      const pgsStreams = await getPGSStreams(mkv);
 
-      console.log(PGSStreams);
+      const pgsFiles = await Promise.all(
+        pgsStreams.map(async (pgsStream) => await extractStream(mkv, pgsStream))
+      );
+
+      console.log(pgsFiles);
     }
   }
 }

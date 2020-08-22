@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import ffmpeg from "fluent-ffmpeg";
 
 type PGSStream = ffmpeg.FfprobeStream & {
@@ -22,4 +24,33 @@ export const getPGSStreams = (mkv: string) =>
         )
       );
     });
+  });
+
+export const extractStream = (mkv: string, pgsStream: PGSStream) =>
+  new Promise((resolve, reject) => {
+    const outputName = path.join(
+      __dirname,
+      "..",
+      "tmp",
+      `${path.basename(mkv)}-${pgsStream.index}.sup`
+    );
+
+    const command = ffmpeg()
+      .input(fs.createReadStream(mkv))
+      .output(outputName)
+      .noAudio()
+      .noVideo()
+      .outputOptions("-map", `0:${pgsStream.index}`, "-c:s", "copy")
+      .on("start", () => {
+        console.log(`Processing ${mkv} stream ${pgsStream.index}...`);
+      })
+      .on("error", (e) => {
+        reject(e);
+      })
+      .on("end", () => {
+        console.log(`Extracted ${outputName}`);
+        resolve(outputName);
+      });
+
+    command.run();
   });
