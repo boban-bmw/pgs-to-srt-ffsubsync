@@ -1,3 +1,5 @@
+import path from "path";
+
 export const END = Buffer.from([0x80]);
 
 export const jump = {
@@ -32,3 +34,5 @@ export const timestampToSrt = (timestamp: number) => {
 
   return `${hours}:${minutes}:${seconds},${milliseconds}`;
 };
+
+export const getFilename = (fullPath: string) => path.basename(fullPath);

@@ -7,8 +7,6 @@ export type SyncResult = {
 
 export const makeSyncer = (srt: string) => (generatedSrt: string) =>
   new Promise<SyncResult | null>((resolve) => {
-    console.log(`Syncing ${srt} with ${generatedSrt}...`);
-
     const filename = `${generatedSrt}-synced.srt`;
 
     let output = "";
@@ -22,6 +20,7 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
       })
       .on("close", (code) => {
         if (code !== 0) {
+          // TODO: are we resolving an already resolved promise?
           resolve(null);
 
           return;

@@ -8,6 +8,7 @@ import { generateTimestamps } from "./generateTimestamps";
 import { generateSrt } from "./generateSrt";
 import { getPGSStreams, extractSup } from "./ffmpeg";
 import { makeSyncer, calcDiff, SyncResult } from "./ffs";
+import { getFilename } from "./util";
 
 const { argv } = yargs.options({
   src: {
@@ -25,7 +26,9 @@ async function run() {
   const srts = await readdir(argv.src, ["!*.srt"]);
 
   for (const mkv of mkvs) {
-    console.log(`Processing ${mkv} (${mkvs.indexOf(mkv)}/${mkvs.length})...`);
+    console.log(
+      `Processing ${getFilename(mkv)} (${mkvs.indexOf(mkv)}/${mkvs.length})...`
+    );
 
     const directory = path.dirname(mkv);
 
@@ -55,6 +58,8 @@ async function run() {
 
         for (const srt of relevantSrts) {
           const syncWith = makeSyncer(srt);
+
+          console.log(`Syncing ${getFilename(srt)}...`);
 
           const results = (
             await Promise.all(generatedSrts.map(syncWith))

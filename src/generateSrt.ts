@@ -1,10 +1,10 @@
 import fs from "fs";
-import { timestampToSrt } from "./util";
+import { timestampToSrt, getFilename } from "./util";
 
 export const generateSrt = (timestamps: number[], outputName: string) =>
   new Promise<string>((resolve) => {
     if (fs.existsSync(outputName)) {
-      console.log(`${outputName} already exists, skipping...`);
+      console.log(`${getFilename(outputName)} already exists, skipping...`);
 
       resolve(outputName);
       return;
@@ -30,7 +30,7 @@ export const generateSrt = (timestamps: number[], outputName: string) =>
     const outputStream = fs
       .createWriteStream(outputName)
       .on("finish", () => {
-        console.log(`Generated ${outputName}`);
+        console.log(`Generated ${getFilename(outputName)}`);
         resolve(outputName);
       })
       .on("error", (e) => {
