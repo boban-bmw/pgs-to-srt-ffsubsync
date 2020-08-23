@@ -15,6 +15,9 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
       .spawn("ffs", [generatedSrt, "-i", srt, "-o", filename])
       .on("close", (code) => {
         if (code !== 0) {
+          console.log(`ffs exited with code ${code}`);
+          console.error(output);
+
           resolve(null);
 
           return;
