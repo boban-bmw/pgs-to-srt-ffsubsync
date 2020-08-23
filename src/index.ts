@@ -27,7 +27,9 @@ async function run() {
 
   for (const mkv of mkvs) {
     console.log(
-      `Processing (${mkvs.indexOf(mkv)}/${mkvs.length}) ${getFilename(mkv)}...`
+      `Processing (${mkvs.indexOf(mkv) + 1}/${mkvs.length}) ${getFilename(
+        mkv
+      )}...`
     );
 
     const directory = path.dirname(mkv);
