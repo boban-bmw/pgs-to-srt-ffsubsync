@@ -13,14 +13,8 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
 
     const child = child_process
       .spawn("ffs", [generatedSrt, "-i", srt, "-o", filename])
-      .on("error", (e) => {
-        console.error(e);
-
-        resolve(null);
-      })
       .on("close", (code) => {
         if (code !== 0) {
-          // TODO: are we resolving an already resolved promise?
           resolve(null);
 
           return;
@@ -32,8 +26,6 @@ export const makeSyncer = (srt: string) => (generatedSrt: string) =>
           ?.slice(0, 5);
 
         if (!offsetSlice || !framerateSlice) {
-          console.error(output);
-
           resolve(null);
 
           return;
