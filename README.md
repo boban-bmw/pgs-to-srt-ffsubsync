@@ -10,7 +10,7 @@ Extract PGS subtitles from your media, generate .srt "binary string" subtitles f
 4. For each `.srt` file in the same directory as the `.mkv`, attempt to sync with generated binary string subtitles
 5. The lowest offset & framerate scale "wins"
 
-`pgs-to-srt-ffsubsync` will leave behind `.sup` and generated `.srt` files in the `tmp` folder - and will not regenerate them if they are present.
+`pgs-to-srt-ffsubsync` will leave behind `.sup` and generated `.srt` files in the `tmp` folder and will not regenerate them if they are present.
 
 ## Usage
 
@@ -18,7 +18,7 @@ Extract PGS subtitles from your media, generate .srt "binary string" subtitles f
 git clone https://github.com/boban-bmw/pgs-to-srt-ffsubsync.git
 cd pgs-to-srt-ffsubsync
 npm install
-npm build
+npm run build
 npm run start -- --src /path/to/your/media
 ```
 
