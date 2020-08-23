@@ -10,11 +10,11 @@ export const generateSrt = (timestamps: number[], outputName: string) =>
       return;
     }
 
-    const srtTimestamps = timestamps.map(timestampToSrt);
-
     if (timestamps.length % 2 !== 0) {
       timestamps.pop();
     }
+
+    const srtTimestamps = timestamps.map(timestampToSrt);
 
     const lines = [];
 
